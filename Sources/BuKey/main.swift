@@ -185,6 +185,16 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTa
         ruleColumn.maxWidth = 160
         ruleColumn.resizingMask = []
         table.addTableColumn(ruleColumn)
+
+        // A real trailing column keeps controls away from the scroll view edge.
+        // Relying on cell padding alone is unreliable during the initial table layout.
+        let gutterColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("gutter"))
+        gutterColumn.title = ""
+        gutterColumn.width = 32
+        gutterColumn.minWidth = 32
+        gutterColumn.maxWidth = 32
+        gutterColumn.resizingMask = []
+        table.addTableColumn(gutterColumn)
         table.columnAutoresizingStyle = .firstColumnOnlyAutoresizingStyle
         table.headerView = NSTableHeaderView()
         table.rowHeight = 30
@@ -236,6 +246,9 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTa
             let label = NSTextField(labelWithString: item.name)
             label.toolTip = item.bundleID
             return label
+        }
+        if tableColumn?.identifier.rawValue == "gutter" {
+            return NSView()
         }
         let popup = NSPopUpButton()
         for source in inputSources {
