@@ -19,6 +19,13 @@ final class RuleStore {
     private let rulesKey = "appRules"
     private let namesKey = "appNames"
 
+    init() {
+        guard defaults.object(forKey: rulesKey) == nil,
+              let previous = defaults.persistentDomain(forName: "local.layoutpilot.app") else { return }
+        if let rules = previous[rulesKey] { defaults.set(rules, forKey: rulesKey) }
+        if let names = previous[namesKey] { defaults.set(names, forKey: namesKey) }
+    }
+
     func rule(for bundleID: String) -> LayoutRule {
         let raw = (defaults.dictionary(forKey: rulesKey) as? [String: String])?[bundleID]
         return LayoutRule(rawValue: raw ?? "") ?? .system
@@ -82,7 +89,7 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         self.onChange = onChange
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 560, height: 360),
                               styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
-        window.title = "Layout Pilot — правила"
+        window.title = "BuKey — правила"
         window.center()
         super.init(window: window)
         buildUI()
@@ -189,7 +196,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menuBarImage?.isTemplate = true
         statusItem.button?.image = menuBarImage
         statusItem.button?.imagePosition = .imageOnly
-        statusItem.button?.toolTip = "Layout Pilot"
+        statusItem.button?.toolTip = "BuKey"
         if let current = NSWorkspace.shared.frontmostApplication, current.bundleIdentifier != Bundle.main.bundleIdentifier {
             lastExternalApp = current
         }
@@ -236,7 +243,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         launchAtLogin.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(launchAtLogin)
         menu.addItem(.separator())
-        let quit = NSMenuItem(title: "Завершить Layout Pilot", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        let quit = NSMenuItem(title: "Завершить BuKey", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.addItem(quit)
         statusItem.menu = menu
     }

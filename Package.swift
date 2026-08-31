@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "LayoutPilot",
+    name: "BuKey",
     platforms: [.macOS(.v13)],
     targets: [
         .executableTarget(
-            name: "LayoutPilot",
+            name: "BuKey",
             linkerSettings: [
                 .linkedFramework("AppKit"),
                 .linkedFramework("Carbon")

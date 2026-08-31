@@ -4,4 +4,4 @@ work/
 outputs/*.app/
 
 # Готовый ZIP хранится в проекте как удобный установочный пакет.
-!outputs/Layout-Pilot.zip
+!outputs/BuKey.zip
