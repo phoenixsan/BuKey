@@ -89,7 +89,7 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         self.onChange = onChange
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 560, height: 360),
                               styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
-        window.title = "BuKey — правила"
+        window.title = "BuKey — App Rules"
         window.center()
         super.init(window: window)
         buildUI()
@@ -106,11 +106,11 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         scroll.documentView = table
 
         let appColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("app"))
-        appColumn.title = "Приложение"
+        appColumn.title = "Application"
         appColumn.width = 400
         table.addTableColumn(appColumn)
         let ruleColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("rule"))
-        ruleColumn.title = "Правило"
+        ruleColumn.title = "Rule"
         ruleColumn.width = 130
         table.addTableColumn(ruleColumn)
         table.headerView = NSTableHeaderView()
@@ -118,7 +118,7 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         table.delegate = self
         table.dataSource = self
 
-        let add = NSButton(title: "Добавить приложение…", target: self, action: #selector(addApplication))
+        let add = NSButton(title: "Add Application…", target: self, action: #selector(addApplication))
         add.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(scroll)
         content.addSubview(add)
@@ -167,7 +167,7 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
 
     @objc private func addApplication() {
         let panel = NSOpenPanel()
-        panel.title = "Выберите приложение"
+        panel.title = "Choose an Application"
         panel.directoryURL = URL(fileURLWithPath: "/Applications")
         panel.allowedContentTypes = [.application]
         panel.allowsMultipleSelection = false
@@ -192,7 +192,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        let menuBarImage = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Layout Pilot")
+        let menuBarImage = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "BuKey")
         menuBarImage?.isTemplate = true
         statusItem.button?.image = menuBarImage
         statusItem.button?.imagePosition = .imageOnly
@@ -218,7 +218,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func rebuildMenu() {
         let menu = NSMenu()
-        let appName = lastExternalApp?.localizedName ?? "Нет активного приложения"
+        let appName = lastExternalApp?.localizedName ?? "No Active Application"
         let heading = NSMenuItem(title: appName, action: nil, keyEquivalent: "")
         heading.isEnabled = false
         menu.addItem(heading)
@@ -235,15 +235,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             menu.addItem(item)
         }
         menu.addItem(.separator())
-        let settingsItem = NSMenuItem(title: "Настроить приложения…", action: #selector(openSettings), keyEquivalent: ",")
+        let settingsItem = NSMenuItem(title: "Configure Applications…", action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
-        let launchAtLogin = NSMenuItem(title: "Запускать при входе", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
+        let launchAtLogin = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
         launchAtLogin.target = self
         launchAtLogin.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(launchAtLogin)
         menu.addItem(.separator())
-        let quit = NSMenuItem(title: "Завершить BuKey", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        let quit = NSMenuItem(title: "Quit BuKey", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.addItem(quit)
         statusItem.menu = menu
     }
@@ -274,7 +274,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         } catch {
             let alert = NSAlert()
-            alert.messageText = "Не удалось изменить автозапуск"
+            alert.messageText = "Unable to Change Launch at Login"
             alert.informativeText = error.localizedDescription
             alert.alertStyle = .warning
             alert.runModal()

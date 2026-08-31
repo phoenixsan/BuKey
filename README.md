@@ -1,21 +1,21 @@
 # BuKey
 
-Небольшая утилита для macOS, которая однократно выбирает раскладку при переходе в приложение.
+A small macOS utility that selects a keyboard layout once when you switch to an application.
 
-- **Ru** — включить русскую раскладку при следующем переходе в приложение.
-- **En** — включить английскую раскладку.
-- **System** — не менять текущую раскладку.
+- **Ru** — select the Russian layout when switching to the application.
+- **En** — select the English layout.
+- **System** — leave the current layout unchanged.
 
-Утилита не отслеживает последующие ручные переключения внутри приложения.
+BuKey does not interfere with subsequent manual layout changes inside the application.
 
-## Сборка
+## Build
 
 ```sh
 chmod +x build.sh
 ./build.sh
 ```
 
-Готовое приложение появится в `outputs/BuKey.app`.
+The built application will appear at `outputs/BuKey.app`.
 
-Для установки распакуйте `outputs/BuKey.zip` и перенесите приложение в `/Applications`.
-Автозапуск включается галочкой «Запускать при входе» в меню приложения.
+To install, extract `outputs/BuKey.zip` and move the application to `/Applications`.
+Enable automatic startup with **Launch at Login** in the application menu.
