@@ -139,9 +139,10 @@ final class RuleStore {
     }
 }
 
-final class SettingsWindowController: NSWindowController, NSTableViewDataSource, NSTableViewDelegate {
+final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTableViewDataSource, NSTableViewDelegate {
     private let store: RuleStore
     private let onChange: () -> Void
+    private let scroll = NSScrollView()
     private let table = NSTableView()
     private var rows: [AppRule] = []
     private var inputSources: [InputSourceOption] = []
@@ -155,6 +156,7 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         window.minSize = NSSize(width: 480, height: 280)
         window.center()
         super.init(window: window)
+        window.delegate = self
         buildUI()
         reload()
     }
@@ -163,7 +165,6 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
 
     private func buildUI() {
         guard let content = window?.contentView else { return }
-        let scroll = NSScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
         scroll.hasVerticalScroller = true
         scroll.autohidesScrollers = true
@@ -202,12 +203,29 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
             add.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 16),
             add.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -16)
         ])
+        content.layoutSubtreeIfNeeded()
+        fitTableToVisibleWidth()
     }
 
     func reload() {
         inputSources = InputSourceCatalog.enabled()
         rows = store.all()
         table.reloadData()
+        fitTableToVisibleWidth()
+    }
+
+    func windowDidBecomeKey(_ notification: Notification) {
+        fitTableToVisibleWidth()
+    }
+
+    private func fitTableToVisibleWidth() {
+        window?.contentView?.layoutSubtreeIfNeeded()
+        let visibleSize = scroll.contentView.bounds.size
+        guard visibleSize.width > 0 else { return }
+        table.setFrameSize(NSSize(
+            width: visibleSize.width,
+            height: max(table.frame.height, visibleSize.height)
+        ))
     }
 
     func numberOfRows(in tableView: NSTableView) -> Int { rows.count }
