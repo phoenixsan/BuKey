@@ -225,6 +225,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTa
     }
 
     func windowDidBecomeKey(_ notification: Notification) {
+        // The scroll view gets its final clip size only after the window is shown.
+        DispatchQueue.main.async { [weak self] in
+            self?.fitTableToVisibleWidth()
+        }
+    }
+
+    func windowDidResize(_ notification: Notification) {
         fitTableToVisibleWidth()
     }
 
@@ -232,6 +239,15 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTa
         window?.contentView?.layoutSubtreeIfNeeded()
         let visibleSize = scroll.contentView.bounds.size
         guard visibleSize.width > 0 else { return }
+
+        // Set the flexible column explicitly. NSTableView's initial automatic
+        // column pass can happen before the scroll view has its final width.
+        let ruleWidth = table.tableColumn(withIdentifier: NSUserInterfaceItemIdentifier("rule"))?.width ?? 160
+        let gutterWidth = table.tableColumn(withIdentifier: NSUserInterfaceItemIdentifier("gutter"))?.width ?? 32
+        let spacingWidth = table.intercellSpacing.width * CGFloat(max(0, table.numberOfColumns - 1))
+        if let appColumn = table.tableColumn(withIdentifier: NSUserInterfaceItemIdentifier("app")) {
+            appColumn.width = max(appColumn.minWidth, visibleSize.width - ruleWidth - gutterWidth - spacingWidth)
+        }
         table.setFrameSize(NSSize(
             width: visibleSize.width,
             height: max(table.frame.height, visibleSize.height)
