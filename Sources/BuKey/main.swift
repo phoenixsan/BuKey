@@ -90,6 +90,7 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 560, height: 360),
                               styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         window.title = "BuKey — App Rules"
+        window.minSize = NSSize(width: 480, height: 280)
         window.center()
         super.init(window: window)
         buildUI()
@@ -107,12 +108,18 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
 
         let appColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("app"))
         appColumn.title = "Application"
-        appColumn.width = 400
+        appColumn.width = 350
+        appColumn.minWidth = 220
+        appColumn.resizingMask = [.autoresizingMask, .userResizingMask]
         table.addTableColumn(appColumn)
         let ruleColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("rule"))
         ruleColumn.title = "Rule"
-        ruleColumn.width = 130
+        ruleColumn.width = 150
+        ruleColumn.minWidth = 130
+        ruleColumn.maxWidth = 180
+        ruleColumn.resizingMask = [.userResizingMask]
         table.addTableColumn(ruleColumn)
+        table.columnAutoresizingStyle = .firstColumnOnlyAutoresizingStyle
         table.headerView = NSTableHeaderView()
         table.rowHeight = 30
         table.delegate = self
@@ -152,7 +159,16 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         popup.tag = row
         popup.target = self
         popup.action = #selector(ruleChanged(_:))
-        return popup
+        popup.translatesAutoresizingMaskIntoConstraints = false
+
+        let cell = NSTableCellView()
+        cell.addSubview(popup)
+        NSLayoutConstraint.activate([
+            popup.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 10),
+            popup.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -10),
+            popup.centerYAnchor.constraint(equalTo: cell.centerYAnchor)
+        ])
+        return cell
     }
 
     @objc private func ruleChanged(_ sender: NSPopUpButton) {
