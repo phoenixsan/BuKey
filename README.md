@@ -2,9 +2,8 @@
 
 A small macOS utility that selects a keyboard layout once when you switch to an application.
 
-- **Ru** — select the Russian layout when switching to the application.
-- **En** — select the English layout.
-- **System** — leave the current layout unchanged.
+- Choose any keyboard layout currently enabled in macOS for each application.
+- **System** leaves the current layout unchanged.
 
 BuKey does not interfere with subsequent manual layout changes inside the application.
 
