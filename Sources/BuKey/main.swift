@@ -166,6 +166,9 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         let scroll = NSScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
         scroll.hasVerticalScroller = true
+        scroll.autohidesScrollers = true
+        scroll.scrollerStyle = .legacy
+        table.autoresizingMask = [.width]
         scroll.documentView = table
 
         let appColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("app"))
@@ -176,10 +179,10 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         table.addTableColumn(appColumn)
         let ruleColumn = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("rule"))
         ruleColumn.title = "Rule"
-        ruleColumn.width = 150
-        ruleColumn.minWidth = 130
-        ruleColumn.maxWidth = 180
-        ruleColumn.resizingMask = [.userResizingMask]
+        ruleColumn.width = 160
+        ruleColumn.minWidth = 160
+        ruleColumn.maxWidth = 160
+        ruleColumn.resizingMask = []
         table.addTableColumn(ruleColumn)
         table.columnAutoresizingStyle = .firstColumnOnlyAutoresizingStyle
         table.headerView = NSTableHeaderView()
@@ -245,8 +248,8 @@ final class SettingsWindowController: NSWindowController, NSTableViewDataSource,
         let cell = NSTableCellView()
         cell.addSubview(popup)
         NSLayoutConstraint.activate([
-            popup.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: 10),
-            popup.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -10),
+            popup.widthAnchor.constraint(equalToConstant: 128),
+            popup.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -12),
             popup.centerYAnchor.constraint(equalTo: cell.centerYAnchor)
         ])
         return cell
