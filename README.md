@@ -7,6 +7,12 @@ A small macOS utility that selects a keyboard layout once when you switch to an 
 
 BuKey does not interfere with subsequent manual layout changes inside the application.
 
+## Why I built BuKey
+
+For a long time, I was frustrated that Blender's keyboard shortcuts did not work as expected whenever my active keyboard layout was not English. Every time I switched to Blender, nothing seemed to work until I manually changed the layout. It was a small interruption, but it happened often enough to become genuinely annoying.
+
+That is how BuKey came to be: a tiny utility that makes sure the right keyboard layout is already active when I switch to an application.
+
 ## Build
 
 ```sh
