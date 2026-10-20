@@ -332,6 +332,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTa
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let store = RuleStore()
+    private let correctionController = AppController.shared
     private var statusItem: NSStatusItem!
     private var lastExternalApp: NSRunningApplication?
     private var settings: SettingsWindowController?
@@ -364,6 +365,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.rebuildMenu()
             }
         }
+        correctionController.start()
+        rebuildMenu()
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        correctionController.applicationDidBecomeActive()
         rebuildMenu()
     }
 
@@ -403,6 +410,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         systemItem.isEnabled = id != nil
         menu.addItem(systemItem)
         menu.addItem(.separator())
+
+        let correctionHeading = NSMenuItem(title: "Text Correction", action: nil, keyEquivalent: "")
+        correctionHeading.isEnabled = false
+        menu.addItem(correctionHeading)
+
+        let correctionStatus = NSMenuItem(title: correctionStatusTitle, action: nil, keyEquivalent: "")
+        correctionStatus.isEnabled = false
+        menu.addItem(correctionStatus)
+
+        let automaticCorrection = NSMenuItem(
+            title: "Automatic Correction",
+            action: #selector(toggleAutomaticCorrection(_:)),
+            keyEquivalent: ""
+        )
+        automaticCorrection.target = self
+        automaticCorrection.state = correctionController.state.automaticCorrectionEnabled ? .on : .off
+        menu.addItem(automaticCorrection)
+
+        addPermissionItems(to: menu)
+
+        let lastTextShortcut = NSMenuItem(title: "Double Caps Lock — correct typed text", action: nil, keyEquivalent: "")
+        lastTextShortcut.isEnabled = false
+        menu.addItem(lastTextShortcut)
+        let selectionShortcut = NSMenuItem(title: "⇧⌥Space — convert selection", action: nil, keyEquivalent: "")
+        selectionShortcut.isEnabled = false
+        menu.addItem(selectionShortcut)
+        menu.addItem(.separator())
+
         let settingsItem = NSMenuItem(title: "Configure Applications…", action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         menu.addItem(settingsItem)
@@ -414,6 +449,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let quit = NSMenuItem(title: "Quit BuKey", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.addItem(quit)
         statusItem.menu = menu
+    }
+
+    private var correctionStatusTitle: String {
+        switch correctionController.state.readiness {
+        case .ready: return "Status: Ready"
+        case .permissionRequired: return "Status: Permissions Required"
+        case .monitorUnavailable: return "Status: Keyboard Monitoring Unavailable"
+        }
+    }
+
+    private func addPermissionItems(to menu: NSMenu) {
+        let status = correctionController.state.permissionStatus
+
+        let accessibility = NSMenuItem(
+            title: status.accessibility ? "Accessibility: Allowed" : "Allow Accessibility…",
+            action: status.accessibility ? nil : #selector(requestAccessibility),
+            keyEquivalent: ""
+        )
+        accessibility.target = self
+        menu.addItem(accessibility)
+
+        let inputMonitoring = NSMenuItem(
+            title: status.inputMonitoring ? "Input Monitoring: Allowed" : "Allow Input Monitoring…",
+            action: status.inputMonitoring ? nil : #selector(requestInputMonitoring),
+            keyEquivalent: ""
+        )
+        inputMonitoring.target = self
+        menu.addItem(inputMonitoring)
     }
 
     @objc private func setRule(_ sender: NSMenuItem) {
@@ -433,6 +496,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         settings?.reload()
         settings?.showWindow(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @objc private func toggleAutomaticCorrection(_ sender: NSMenuItem) {
+        correctionController.setAutomaticCorrectionEnabled(
+            !correctionController.state.automaticCorrectionEnabled
+        )
+        rebuildMenu()
+    }
+
+    @objc private func requestAccessibility() {
+        correctionController.requestAccessibility()
+        correctionController.openAccessibilitySettings()
+        rebuildMenu()
+    }
+
+    @objc private func requestInputMonitoring() {
+        correctionController.requestInputMonitoring()
+        correctionController.openInputMonitoringSettings()
+        rebuildMenu()
     }
 
     @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {

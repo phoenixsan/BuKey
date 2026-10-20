@@ -7,10 +7,18 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "BuKey",
+            resources: [.process("Resources")],
             linkerSettings: [
                 .linkedFramework("AppKit"),
-                .linkedFramework("Carbon")
+                .linkedFramework("ApplicationServices"),
+                .linkedFramework("Carbon"),
+                .linkedFramework("CoreGraphics"),
+                .linkedFramework("ServiceManagement")
             ]
+        ),
+        .testTarget(
+            name: "BuKeyTests",
+            dependencies: ["BuKey"]
         )
     ]
 )

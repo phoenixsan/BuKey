@@ -1,0 +1,8 @@
+hello	100000
+world	85000
+the	1000000
+and	800000
+keyboard	10000
+switcher	5000
+text	60000
+word	50000

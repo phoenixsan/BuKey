@@ -8,12 +8,15 @@ BUILD_DIR="$ROOT_DIR/work/build"
 
 cd "$ROOT_DIR"
 mkdir -p "$BUILD_DIR/swift-cache" "$BUILD_DIR/clang-cache"
+SWIFT_SOURCES=("$ROOT_DIR"/Sources/BuKey/**/*.swift(N))
 SWIFTPM_MODULECACHE_OVERRIDE="$BUILD_DIR/swift-cache" \
 CLANG_MODULE_CACHE_PATH="$BUILD_DIR/clang-cache" \
 swiftc -O \
-    "$ROOT_DIR/Sources/BuKey/main.swift" \
+    "${SWIFT_SOURCES[@]}" \
+    -framework ApplicationServices \
     -framework AppKit \
     -framework Carbon \
+    -framework CoreGraphics \
     -framework ServiceManagement \
     -target arm64-apple-macosx13.0 \
     -o "$BUILD_DIR/BuKey"
@@ -29,6 +32,7 @@ swiftc -O \
 mkdir -p "$CONTENTS_DIR/MacOS" "$CONTENTS_DIR/Resources"
 cp "$BUILD_DIR/BuKey" "$CONTENTS_DIR/MacOS/BuKey"
 cp "$ROOT_DIR/Info.plist" "$CONTENTS_DIR/Info.plist"
+cp "$ROOT_DIR/Sources/BuKey/Resources/"*.txt "$CONTENTS_DIR/Resources/"
 "$BUILD_DIR/render_macos_icon" \
     "$ROOT_DIR/Assets/BuKey-1024.png" \
     "$CONTENTS_DIR/Resources/BuKey.png"
